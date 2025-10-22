@@ -27,7 +27,7 @@ Kommentar: <input type="text" id="kommentarInput" placeholder="z.B. Stau im Salo
 </div>
 
 <script>
-const apiUrl = "/api/verzug"; // wird auf Vercel deployed
+const apiUrl = "/api/verzug";
 
 async function loadVerzug() {
     try {
