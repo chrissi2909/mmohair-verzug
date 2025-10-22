@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MMOHAIR Verzugsanzeige</title>
+<style>
+body { font-family: Arial; text-align: center; margin: 40px; }
+.status { font-size: 48px; margin-top: 20px; color: #d9534f; }
+.admin { margin-top: 50px; }
+input, button { padding: 10px; font-size: 16px; margin: 5px; }
+.comment { margin-top: 10px; font-size: 18px; color: #333; }
+</style>
+</head>
+<body>
+
+<h1>MMOHAIR Verzugsanzeige</h1>
+<div class="status" id="verzug">Lade…</div>
+<div class="comment" id="kommentar"></div>
+
+<div class="admin">
+<h2>Admin Bereich</h2>
+Passwort: <input type="password" id="adminPass" placeholder="Passwort"><br>
+Verzugszeit (Minuten): <input type="number" id="verzugInput" placeholder="z.B. 10"><br>
+Kommentar: <input type="text" id="kommentarInput" placeholder="z.B. Stau im Salon"><br>
+<button onclick="updateVerzug()">Verzug aktualisieren</button>
+</div>
+
+<script>
+const apiUrl = "/api/verzug"; // wird auf Vercel deployed
+
+async function loadVerzug() {
+    try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        document.getElementById("verzug").textContent = data.minuten > 0 ? `+${data.minuten} Minuten` : `${data.minuten} Minuten`;
+        document.getElementById("kommentar").textContent = data.kommentar || "";
+    } catch(e) {
+        document.getElementById("verzug").textContent = "Fehler beim Laden";
+    }
+}
+
+async function updateVerzug() {
+    const pass = document.getElementById("adminPass").value;
+    if(pass !== "1234") { alert("Falsches Passwort"); return; }
+
+    const minuten = parseInt(document.getElementById("verzugInput").value);
+    const kommentar = document.getElementById("kommentarInput").value;
+
+    if(isNaN(minuten)) { alert("Bitte eine Zahl eingeben"); return; }
+
+    await fetch(apiUrl, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ minuten, kommentar })
+    });
+
+    loadVerzug();
+    alert("Verzug aktualisiert!");
+}
+
+setInterval(loadVerzug, 10000); // alle 10 Sekunden neu laden
+loadVerzug();
+</script>
+</body>
+</html>

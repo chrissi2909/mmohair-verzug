@@ -1,0 +1,14 @@
+let data = { minuten: 0, kommentar: "" };
+
+export default function handler(req, res) {
+  if(req.method === "GET") {
+    res.status(200).json(data);
+  } else if(req.method === "POST") {
+    const body = req.body;
+    data.minuten = body.minuten;
+    data.kommentar = body.kommentar || "";
+    res.status(200).json({ message: "Aktualisiert" });
+  } else {
+    res.status(405).send("Method Not Allowed");
+  }
+}
